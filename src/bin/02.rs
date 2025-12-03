@@ -1,10 +1,3 @@
-// use nom::{
-//     IResult, Parser, bytes::complete::tag, character::digit1, combinator::map,
-//     multi::separated_list1, sequence::separated_pair,
-// };
-
-use std::collections::HashSet;
-
 use itertools::Itertools;
 
 advent_of_code::solution!(2);
