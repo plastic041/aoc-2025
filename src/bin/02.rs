@@ -36,18 +36,49 @@ fn is_invalid_id(num: u64) -> bool {
     &numstr[..half_len] == &numstr[half_len..]
 }
 
+fn check(input: &str, size: usize) -> bool {
+    let len = input.len();
+    if len % size != 0 {
+        return false;
+    }
+
+    let bytes = input.as_bytes();
+
+    let chunk_count = len / size;
+
+    for char_index in 0..size {
+        for chunk_index in 0..chunk_count {
+            let first = bytes[char_index];
+
+            let real_char_index = chunk_index * size + char_index;
+            if bytes[real_char_index] != first {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
 fn is_invalid_id2(num: u64) -> bool {
     let numstr = num.to_string();
-    let half_len = numstr.len() / 2;
+    let len = numstr.len();
+    let half_len = len / 2;
 
     for l in 1..=half_len {
-        let chunks: HashSet<&str> = numstr
-            .as_bytes()
-            .chunks(l)
-            .map(|chunk| std::str::from_utf8(chunk).unwrap())
-            .collect();
-        if chunks.len() == 1 {
-            return true;
+        if len % l == 0 {
+            let checked = check(&numstr, l);
+            if checked {
+                return true;
+            }
+            // let chunks: HashSet<&str> = numstr
+            //     .as_bytes()
+            //     .chunks(l)
+            //     .map(|chunk| std::str::from_utf8(chunk).unwrap())
+            //     .collect();
+            // if chunks.len() == 1 {
+            //     return true;
+            // }
         }
     }
 
@@ -114,5 +145,14 @@ mod tests {
     fn test_part_two() {
         let result = part_two(&advent_of_code::template::read_file("examples", DAY));
         assert_eq!(result, Some(4174379265));
+    }
+
+    #[test]
+    fn test_check() {
+        let result = check("123123", 3);
+        assert!(result);
+
+        let result2 = check("123123", 2);
+        assert!(!result2);
     }
 }
