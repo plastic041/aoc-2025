@@ -2,44 +2,46 @@ use itertools::Itertools;
 
 advent_of_code::solution!(3);
 
-fn find_largest_battery(input: &str) -> u8 {
+fn find_largest_battery(input: &str, digits: usize) -> u64 {
     let bytes = input.as_bytes();
 
-    let mut tenth_index = 0;
-    let mut tenth_largest = 0;
-    for (i, num) in bytes[..bytes.len() - 1].iter().enumerate() {
-        if tenth_largest < *num {
-            tenth_largest = *num;
-            tenth_index = i;
+    let mut numbers = vec![];
+
+    let mut last_index: i32 = -1;
+
+    for digit in 1..=digits {
+        let mut largest = 0;
+
+        for i in (last_index + 1) as usize..bytes.len() - digits + digit {
+            let num = bytes[i];
+            if largest < num {
+                largest = num;
+                last_index = i as i32;
+            }
         }
+        numbers.push(largest);
     }
 
-    let tenth = bytes[tenth_index] as char;
-
-    let mut oneth_index = 0;
-    let mut oneth_largest = 0;
-    for (i, num) in bytes[tenth_index + 1..].iter().enumerate() {
-        if oneth_largest < *num {
-            oneth_largest = *num;
-            oneth_index = i + tenth_index + 1;
-        }
-    }
-    let oneth = bytes[oneth_index] as char;
-
-    let s = format!("{}{}", tenth, oneth);
-
-    s.parse().unwrap()
+    numbers
+        .iter()
+        .map(|num| *num as char)
+        .join("")
+        .parse::<u64>()
+        .unwrap()
 }
 
 pub fn part_one(input: &str) -> Option<u64> {
     let banks = input.lines();
-    let batteries = banks.map(|bank| find_largest_battery(bank) as u64).sum();
+    let batteries = banks.map(|bank| find_largest_battery(bank, 2)).sum();
 
     Some(batteries)
 }
 
 pub fn part_two(input: &str) -> Option<u64> {
-    None
+    let banks = input.lines();
+    let batteries = banks.map(|bank| find_largest_battery(bank, 12)).sum();
+
+    Some(batteries)
 }
 
 #[cfg(test)]
@@ -55,12 +57,15 @@ mod tests {
     #[test]
     fn test_part_two() {
         let result = part_two(&advent_of_code::template::read_file("examples", DAY));
-        assert_eq!(result, None);
+        assert_eq!(result, Some(3121910778619));
     }
 
     #[test]
     fn test_largest_battery() {
-        let result = find_largest_battery("987654321111111");
-        assert_eq!(result, 98);
+        let result = find_largest_battery("234234234234278", 2);
+        assert_eq!(result, 78);
+
+        let result = find_largest_battery("987654321111111", 12);
+        assert_eq!(result, 987654321111);
     }
 }
