@@ -1,6 +1,6 @@
 {
     "name": "rust-devcontainer",
     "image": "mcr.microsoft.com/devcontainers/rust:latest",
-    "postCreateCommand": "rustc --version",
+    "postCreateCommand": "sudo apt-get update && sudo apt-get install -y libz3-dev libclang-dev && rustc --version",
     "remoteUser": "vscode"
 }
