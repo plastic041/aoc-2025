@@ -80,8 +80,9 @@ impl Machine {
             if !buttons.is_empty() {
                 let sum = buttons
                     .iter()
-                    .skip(1)
-                    .fold(buttons[0].clone(), |acc, button| acc + (*button).clone());
+                    .map(|b| (*b).clone())
+                    .reduce(|acc, button| acc + button)
+                    .unwrap();
                 let modulo = sum.modulo(&Int::from_i64(2));
                 optimizer.assert(&modulo.eq(&Int::from_i64(target)));
             }
@@ -91,8 +92,9 @@ impl Machine {
 
         let total = button_vars
             .iter()
-            .skip(1)
-            .fold(button_vars[0].clone(), |acc, button| acc + button.clone());
+            .map(|b| (*b).clone())
+            .reduce(|acc, button| acc + button)
+            .unwrap();
         optimizer.minimize(&total);
 
         match optimizer.check(&[]) {
